@@ -48,3 +48,32 @@ print(b)
 
 # if numpy is modified,tensor is also modified .
 # this happens if tensor is on Cpu  
+
+
+
+# if we want to compute graident on tensor later
+x = torch.ones(5,requires_grad = True)
+print(x)
+
+# requires_grad - if we want to find gradient of any func wrt x later
+x = torch.randn(3,requires_grad = True)
+print(x) 
+# a computational graph is created whenver we perform some operation on x
+y = x + 2
+print(y)
+y = y.mean() # scalar
+y.backward() # dy/dx
+
+print(x.grad)
+
+z = x + 2 # vector
+v = torch.tensor([0.1,1.0,0.001],dtype = torch.float32)
+z.backward(v)
+print(x.grad) # gradient
+
+# removing a gradient
+# x.detach(),x.requires_grad_(false),
+# with torch.no_grad(): 
+#      y = x + 2 removes gradient
+
+# empty graident x.grad.zero_()
