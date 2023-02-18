@@ -18,3 +18,14 @@ print(x)
 # creating tensor from python list
 x = torch.tensor([2,3,4])
 print(x)
+
+# reshaping
+x = torch.rand(4,4)
+print(x)
+
+y = x.view(16)
+print(y)
+
+# 2 * 8 
+y = x.view(-1,8)
+print(y.size())
