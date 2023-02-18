@@ -17,4 +17,4 @@ print(x)
 
 # creating tensor from python list
 x = torch.tensor([2,3,4])
-print(x) 
+print(x)
