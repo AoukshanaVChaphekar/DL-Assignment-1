@@ -77,3 +77,21 @@ print(x.grad) # gradient
 #      y = x + 2 removes gradient
 
 # empty graident x.grad.zero_()
+
+# backpropagation
+x = torch.tensor(1.0)
+y = torch.tensor(2.0)
+
+w = torch.tensor(1.0,requires_grad = True)
+
+# forward pass and compute the loss
+y_hat = w * x
+loss = (y_hat - y) ** 2
+print(loss)
+
+# backward pass
+loss.backward() # d(loss)/ dw
+print(w.grad)
+
+## update weights and 
+## do next forward,backward pass for several iteraions to minimize loss 
