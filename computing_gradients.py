@@ -51,3 +51,11 @@ for epoch in range(n_iters):
     print(f'epoch {epoch + 1}: w = {w:.3f}, loss - {l:.8f}')
 
 print(f'Prection after training : f(5) = {forward(5):.3f}')
+
+# Training pipeline in pytorch:
+# 1) design model(input,output size,forward pass)
+# 2) construct loss and optimizer
+# 3) training loop -
+#   forward pass : compute prediction
+#   backward pass : Gradients
+#   update weights
