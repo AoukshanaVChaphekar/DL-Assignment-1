@@ -29,3 +29,22 @@ print(y)
 # 2 * 8 
 y = x.view(-1,8)
 print(y.size())
+
+
+# converting tensor to numpy
+a = torch.ones(5)
+print(a)
+
+b = a.numpy()
+print(b)
+
+# if tensor is on cpu then if we modify a,b gets modified
+# converting numpy to tensor
+a = np.ones(5)
+print(a)
+
+b = torch.from_numpy(a)
+print(b)
+
+# if numpy is modified,tensor is also modified .
+# this happens if tensor is on Cpu  
