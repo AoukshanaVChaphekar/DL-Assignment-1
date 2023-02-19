@@ -49,4 +49,45 @@ def question_1():
   # Displaying the plot
   plt.show()
 
-question_1()
+# question_1()
+
+# forward propagation
+def forward(weights,input,bias,L,index):
+  
+  # dictionary storing pre_activation vectors from each layer
+  pre_activation = {}
+
+  # dictionary storing post_activation vectors from each layer
+  post_activation = {}
+
+  # Populating pre_activation and post_activation vectors to dictionary in each layer for input[index]
+  for k in range(1,L):
+
+    # for first layer,post activation will be inputs
+    if(k == 1):
+      ''' flattening the input: 
+          -input(60000,28,28)
+          -input[index] size = (28,28)
+          -flattening input[index] gives size (784,1) = (d,1) where d is dimension of input
+          post_activation[h0] size = (d,1)
+          bias[b1] size = (nnl,1)
+          weights[w1] size = (nnl,d)
+          Therefore we get pre_activation[a1] size = (nnl,1) for all layer except last layer
+      '''
+      post_activation["h" + str(k - 1)] = input[index].flatten()
+
+    # computing a(k) = b(k) + w(k)*h(k - 1) for each input[index]
+    pre_activation["a" + str(k)] = bias["b" + str(k)] + np.matmul(weights["w" + str(k)],post_activation["h" + str(k - 1)])
+    
+    # computing h(k) = g(a(k)) where g is activation function for each input[index]
+    post_activation["h" + str(k)] = activation_func(pre_activation["a" + str(k)],"sigmoid")
+    
+    # computing pre_activation for last layer for each input[index]
+    pre_activation["a"+ str(L)] = bias["b" + str(L)] + np.matmul(weights["w" + str(L)],post_activation["h" + str(L - 1)])
+
+    # prediction y (y_hat) = O(a(L)) where O is output function
+    predicted_y = output_func(pre_activation["a" + str(L)],"softmax")
+
+  return pre_activation,post_activation,predicted_y
+
+
