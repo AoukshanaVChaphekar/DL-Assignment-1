@@ -51,8 +51,8 @@ def question_1():
 
 # question_1()
 
-# forward propagation
-def forward(weights,input,bias,L,index):
+# forward propagation - returns pre_activation vector,post_activation vector and predicted_y vector for each input
+def forward_propagation(weights,input,bias,L,index):
   
   # dictionary storing pre_activation vectors from each layer
   pre_activation = {}
@@ -89,5 +89,4 @@ def forward(weights,input,bias,L,index):
     predicted_y = output_func(pre_activation["a" + str(L)],"softmax")
 
   return pre_activation,post_activation,predicted_y
-
 
