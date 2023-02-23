@@ -5,18 +5,20 @@ import numpy as np
 from matplotlib import pyplot as plt
 import random
 import wandb
+
+
 class FeedForward :
 
   
   def __init__(self):
         self.parameters = {
-          "wandb_project":"myprojectname",
+          "wandb_project":"DL Assignment 1",
           "wandb_entity" : "myname",
           "dataset" : "fashion_mnist",
           "epochs" : 1,
           "batch_size" : 4,
           "loss" : "cross_entropy",
-          "optimizer" : "sgd",
+          "optimizer" : "gd",
           "learning_rate" : 0.1,
           "momentum" : 0.5,
           "beta" : 0.5,
@@ -34,9 +36,7 @@ class FeedForward :
               (self.x_train,self.y_train),(self.x_test,self.y_test) = fashion_mnist.load_data()
         else:
               (self.x_train,self.y_train),(self.x_test,self.y_test) = mnist.load_data()
-        
-              
-
+    
         # computing number of samples in training and test data
         self.train_n_samples = self.x_train.shape[0]
         self.test_n_samples = self.x_test.shape[0]
@@ -45,10 +45,17 @@ class FeedForward :
         self.title = ["T-shirt/top","Trouser","PullOver","Dress","Coat","Sandal","Shirt","Sneaker","Bag","Ankle Boot"]
         self.no_of_label = len(self.title)
 
+        self.L = self.parameters["num_layers"] + 1
+        self.k = len(self.title)
+        self.nnl = self.parameters["hidden_size"]
+        self.d = self.x_train.shape[1] * self.x_train.shape[2]
+        self.n = self.train_n_samples
+
         # initialize wandb
         wandb.init(
             # set the wandb project where this run will be logged
-            project="DL Assignment 1",
+            project=self.parameters["wandb_project"],
+            # entity= self.parameters["wandb_entity"]
           )
   
 
@@ -77,215 +84,231 @@ class FeedForward :
       images.append(image)
     wandb.log({"Images": images})
 
-feed_forward = FeedForward()
-feed_forward.question_1()
-  # # function used to implement different activation functions
-  # def activation_func(x,function_name):
-  #   if function_name == "sigmoid":
-  #     return 1 / (1 + np.exp(-x))
+  # function used to implement different activation functions
+  def activation_func(self,x,function_name):
+        if function_name == "sigmoid":
+              return 1 / (1 + np.exp(-x))
 
-  # # function used to implement different output functions
-  # def output_func(x,function_name):
-  #   if function_name == "softmax":
-  #     max_element = x.max()
-  #     x = x / max_element
-  #     return np.exp(x) / sum(np.exp(x))  
+  # function used to implement different output functions
+  def output_func(self,x,function_name):
+    if function_name == "softmax":
+      max_element = x.max()
+      x = x / max_element
+      return np.exp(x) / sum(np.exp(x))  
 
-  # # function generating one-hot vector 
-  # def oneHotVector(size,index):
-  #   oneHot = np.zeros(size)
-  #   oneHot[index] = 1
-  #   return oneHot
+  # function generating one-hot vector 
+  def oneHotVector(self,size,index):
+    oneHot = np.zeros(size)
+    oneHot[index] = 1
+    return oneHot
 
-  # # function returning the gradient of function given as an input
-  # def differentiation(self,function_name,x):
-  #   if function_name == "sigmoid":
-  #     return self.activation_func(x,"sigmoid")*(1 - self.activation_func(x,"sigmoid"))
+  # function returning the gradient of function given as an input
+  def differentiation(self,function_name,x):
+    if function_name == "sigmoid":
+      return self.activation_func(x,"sigmoid")*(1 - self.activation_func(x,"sigmoid"))
 
-  # # function returning the loss function value
-  # def loss_function(y_predicted,function_name,index):
-  #   if function_name == "cross_entropy":
-  #     return -np.log(y_predicted[index])
+  # function returning the loss function value
+  def loss_function(self,y_predicted,function_name,index):
+    if function_name == "cross_entropy":
+      return -np.log(y_predicted[index])
 
-  # # forward propagation - returns pre_activation vector,post_activation vector and predicted_y vector for each input
-  # def forward_propagation(self,weights,input,bias,L,index):
+  # forward propagation - returns pre_activation vector,post_activation vector and predicted_y vector for each input
+  def forward_propagation(self,input,index,weights,bias):
         
-  #   # dictionary storing pre_activation vectors from each layer
-  #   pre_activation = {}
+    # input = self.x_train
+    # dictionary storing pre_activation vectors from each layer
+    pre_activation = {}
 
-  #   # dictionary storing post_activation vectors from each layer
-  #   post_activation = {}
-
-  #   # Populating pre_activation and post_activation vectors to dictionary in each layer for input[index]
-  #   for k in range(1,L):
-
-  #     # for first layer,post activation will be input
-  #     if(k == 1):
-  #       ''' flattening the input: 
-  #           -input(60000,28,28)
-  #           -input[index] size = (28,28)
-  #           -flattening input[index] gives size (784,1) = (d,1) where d is dimension of input
-  #           post_activation[h0] size = (d,1)
-  #           bias[b1] size = (nnl,1)
-  #           weights[w1] size = (nnl,d)
-  #           Therefore we get pre_activation[a1] size = (nnl,1) for all layer except last layer
-  #       '''
-  #       post_activation["h" + str(k - 1)] = input[index].flatten()
-
-  #     # computing a(k) = b(k) + w(k)*h(k - 1) for each input[index]
-  #     pre_activation["a" + str(k)] = bias["b" + str(k)] + np.dot(weights["w" + str(k)],np.reshape(post_activation["h" + str(k - 1)],(-1,1)))
-      
-  #     # computing h(k) = g(a(k)) where g is activation function
-  #     post_activation["h" + str(k)] = activation_func(pre_activation["a" + str(k)],"sigmoid")
-      
-  #   # computing pre_activation for last layer
-  #   pre_activation["a"+ str(L)] = bias["b" + str(L)] + np.dot(weights["w" + str(L)],post_activation["h" + str(L - 1)])
-
-  #   # prediction y (y_hat) = O(a(L)) where O is output function
-  #   predicted_y = output_func(pre_activation["a" + str(L)],"softmax")
+    # dictionary storing post_activation vectors from each layer
+    post_activation = {}
     
-  #   return pre_activation,post_activation,predicted_y
+    L = self.L
+    # Populating pre_activation and post_activation vectors to dictionary in each layer for input[index]
+    for k in range(1,L):
 
-  #   # performs back propagation and returns gradients of weights and bias
-  # def backward_propagation(index,pre_activation,post_activation,predicted_y,actual_y,L,weights):
-  #   grad_pre_activation = {}
-  #   grad_post_activation ={}
-  #   grad_weights = {}
-  #   grad_bias = {}
-
-  #   # Computing output gradient
-  #   one_hot_vector = np.reshape(np.exp(oneHotVector(no_of_label,y_train[index])),(-1,1))
-  #   grad_pre_activation["a" + str(L)] = (predicted_y - one_hot_vector)
-    
-  #   k = L
-
-  #   while k > 0:
-
-  #     # Computing gradient w.r.t parameters - weight and bais
-  #     '''
-  #       np.reshape(grad_pre_activation["a" + str(L)],(-1,1)) = (k,1)
-  #       np.reshape(post_activation["h" + str(L - 1)],(1,-1)) = (1,nnl)
-  #     '''
-  #     grad_weights["w" + str(k)] = np.dot(grad_pre_activation["a" + str(k)],np.reshape(post_activation["h" + str(k - 1)],(1,-1)))
-  #     grad_bias["b" + str(k)] = grad_pre_activation["a" + str(k)]
-
-  #     if k != 1:
-  #       # Computing gradient differentiationt w.r.t layer below (post_activation)
-  #       grad_post_activation["h" + str(k - 1)] = np.dot(weights["w" + str(k)].T,grad_pre_activation["a" + str(k)])
-
-  #       # Computing gradient w.r.t layer below (pre_activation)
-  #       g_dash = differentiation("sigmoid",pre_activation["a" + str(k - 1)])
-  #       grad_pre_activation["a" + str(k - 1)] = np.multiply(grad_post_activation["h" + str(k - 1)],g_dash)
-
-  #     k = k - 1
-  #   return grad_weights,grad_bias
-  # def optimization_function(function_name,n,index,weights,bias,acc_grad_weights,acc_grad_bias,step_size,nnl,d,k,L):
-  #   if (function_name == "gd" & index == (n - 1)) | function_name == "sgd":
-  #         for (key,value) in weights.items():
-  #           weights[key] = np.subtract(weights[key],step_size * acc_grad_weights[key])
-  #         for (key,value) in bias.items():
-  #           bias[key] = np.subtract(bias[key],step_size * acc_grad_bias[key])
-  #         make_accumalate_zero(nnl,d,k,L)
-  #         return weights,bias
-  #   # if (function_name == "momentum_gd" & index == (n - 1)):   
-  # def make_accumalate_zero(nnl,d,k,L):
-  #     acc_grad_weights = {}
-  #     acc_grad_bias = {}
+      # for first layer,post activation will be input
+      if(k == 1):
+        ''' flattening the input: 
+            -input(60000,28,28)
+            -input[index] size = (28,28)
+            -flattening input[index] gives size (784,1) = (d,1) where d is dimension of input
+            post_activation[h0] size = (d,1)
+            bias[b1] size = (nnl,1)
+            weights[w1] size = (nnl,d)
+            Therefore we get pre_activation[a1] size = (nnl,1) for all layer except last layer
+        '''
+        post_activation["h" + str(k - 1)] = input[index].flatten()
+      # computing a(k) = b(k) + w(k)*h(k - 1) for each input[index]
+      pre_activation["a" + str(k)] = bias["b" + str(k)] + np.dot(weights["w" + str(k)],np.reshape(post_activation["h" + str(k - 1)],(-1,1)))
       
-  #     acc_grad_weights["w1"] = np.zeros((nnl,d))
-  #     for i in range(2,L):
-  #       acc_grad_weights["w" + str(i)] = np.zeros((nnl,nnl))
-  #     acc_grad_weights["w" + str(L)] = np.zeros((k,nnl))
-
-  #     for i in range(1,L):
-  #       acc_grad_bias["b" + str(i)] = np.reshape(np.zeros((nnl)),(-1,1))
-  #     acc_grad_bias["b" + str(L)] = np.reshape(np.zeros((k)),(-1,1))
-  #     return acc_grad_weights,acc_grad_bias
-           
-  # # nnl = number of neurons in each layer,hl = number of hidden layers
-  # def feed_forward(self):
-  #   nnl = self.parameters["num_layers"]
-  #   hl = self.parameters["hidden_size"]
-  #   optimizer_func = self.parameters["optimizer"] 
-
-  #   n = self.train_n_samples
-
-  #   # d = dimension of input
-  #   d = self.x_train.shape[1] * self.x_train.shape[2]
-
-  #   # parameters - weights,bias
-  #   weights = {}
-  #   bias = {}
-
-  #   input = self.x_train
-  #   actual_y = self.y_train
-
-  #   # number of iterations
-  #   max_iter = 10
-  #   epoch = 0
-
-  #   # k = number of output neurons
-  #   k = len(self.title)
-
-  #   # total layers
-  #   L = hl + 1
-
-  #   # step size
-  #   step_size = epoch + 1
-
-  #   # initailzation of weights
-  #   '''
-  #       W1 = (d,nnl)
-  #       W2,..,W(L - 1) = (nnl,nnl)
-  #       WL = (k,nnl)
-  #   '''
-  #   w1 = np.random.rand(nnl,d)
-  #   weights["w1"] = w1
-  #   for i in range(2,L):
-  #     weights["w" + str(i)] = np.random.rand(nnl,nnl)
-  #   weights["w" + str(L)] = np.random.rand(k,nnl)
-
-    
-  #   # initialization of bias
-  #   for i in range(1,L):
-  #     bias["b" + str(i)] = np.reshape(np.random.rand(nnl),(-1,1))
-  #   bias["b" + str(L)] = np.reshape(np.random.rand(k),(-1,1))
-
-  #   loss = []
+      # computing h(k) = g(a(k)) where g is activation function
+      post_activation["h" + str(k)] = self.activation_func(pre_activation["a" + str(k)],self.parameters["activation"])
       
-  #   while (epoch < max_iter):
-  #     loss_input = 0
+    # computing pre_activation for last layer
+    pre_activation["a"+ str(L)] = bias["b" + str(L)] + np.dot(weights["w" + str(L)],post_activation["h" + str(L - 1)])
 
-  #     # to accumulate grad_weights and grad_bais for each epoch
-  #     acc_grad_weights,acc_grad_bias = self.make_accumalate_zero(nnl = nnl,d = d,k = k,L = L)
+    # prediction y (y_hat) = O(a(L)) where O is output function
+    predicted_y = self.output_func(pre_activation["a" + str(L)],"softmax")
+    
+    return pre_activation,post_activation,predicted_y
 
-  #     for index in range(n):
-        
-  #       # forward propagation
-  #       pre_activation,post_activation,predicted_y = forward_propagation(weights,input,bias,L,index)
-        
-  #       # compute loss
-  #       loss_input += loss_function(predicted_y,"cross_entropy",y_train[index])
-
-  #       # backward propagation
-  #       grad_weights,grad_bias = backward_propagation(index,pre_activation,post_activation,predicted_y,actual_y,L,weights)
-
-  #       # accumulate grad_weights and grad_bais for each input
-  #       for (key,value) in grad_weights.items():
-  #         acc_grad_weights[key] = acc_grad_weights[key] + grad_weights[key]
-  #       for (key,value) in grad_bias.items():
-  #         acc_grad_bias[key] = acc_grad_bias[key] + grad_bias[key]
-        
-  #       acc_grad_weights,acc_grad_bias,weights,bias = optimization_function(function_name= "gd",n = n,index = index,weights = weights,
-  #       bias = bias,acc_grad_weights = acc_grad_weights,acC_grad_bias = acc_grad_bias,step_size= step_size,nnl = nnl,d = d,k = k,L = L)
-          
-  #     epoch = epoch + 1
-  #     step_size = epoch
-  #     loss.append(loss_input/n)
-
-  #   index = np.random.randint(test_n_samples)
-  #   input = x_test
-  #   pre_activation,post_activation,predicted_y = forward_propagation(weights,input,bias,L,index)
-
-  #   print(predicted_y*100)
+    # performs back propagation and returns gradients of weights and bias
   
+  def backward_propagation(self,index,weights,bias,pre_activation,post_activation,predicted_y,actual_y):
+    grad_pre_activation = {}
+    grad_post_activation ={}
+    grad_weights = {}
+    grad_bias = {}
+    L = self.L
+    # Computing output gradient
+    one_hot_vector = np.reshape(np.exp(self.oneHotVector(self.no_of_label,self.y_train[index])),(-1,1))
+    grad_pre_activation["a" + str(L)] = (predicted_y - one_hot_vector)
+    k = L
+
+    while k > 0:
+
+      # Computing gradient w.r.t parameters - weight and bais
+      '''
+        np.reshape(grad_pre_activation["a" + str(L)],(-1,1)) = (k,1)
+        np.reshape(post_activation["h" + str(L - 1)],(1,-1)) = (1,nnl)
+      '''
+      grad_weights["w" + str(k)] = np.dot(grad_pre_activation["a" + str(k)],np.reshape(post_activation["h" + str(k - 1)],(1,-1)))
+      grad_bias["b" + str(k)] = grad_pre_activation["a" + str(k)]
+
+      if k != 1:
+        # Computing gradient differentiationt w.r.t layer below (post_activation)
+        grad_post_activation["h" + str(k - 1)] = np.dot(weights["w" + str(k)].T,grad_pre_activation["a" + str(k)])
+
+        # Computing gradient w.r.t layer below (pre_activation)
+        g_dash = self.differentiation(self.parameters["activation"],pre_activation["a" + str(k - 1)])
+        grad_pre_activation["a" + str(k - 1)] = np.multiply(grad_post_activation["h" + str(k - 1)],g_dash)
+
+      k = k - 1
+    return grad_weights,grad_bias
+
+  def optimization_function(self,function_name,index,acc_grad_weights,acc_grad_bias,weights,bias):
+        nnl = self.nnl
+        d = self.d
+        k = self.k
+        L = self.L
+        step_size = self.parameters["learning_rate"]
+
+        if (function_name == "gd" and index == (self.n - 1)) or function_name == "sgd":
+              for (key,value) in weights.items():
+                weights[key] = np.subtract(weights[key],step_size * acc_grad_weights[key])
+              for (key,value) in bias.items():
+                bias[key] = np.subtract(bias[key],step_size * acc_grad_bias[key])
+              self.make_accumalate_zero()
+        return acc_grad_weights,acc_grad_bias,weights,bias
+    
+  def make_accumalate_zero(self):
+
+        nnl = self.nnl
+        d = self.d
+        k = self.k
+        L = self.L
+        
+        acc_grad_weights = {}
+        acc_grad_bias = {}
+        
+        acc_grad_weights["w1"] = np.zeros((nnl,d))
+        for i in range(2,L):
+          acc_grad_weights["w" + str(i)] = np.zeros((nnl,nnl))
+        acc_grad_weights["w" + str(L)] = np.zeros((k,nnl))
+
+        for i in range(1,L):
+          acc_grad_bias["b" + str(i)] = np.reshape(np.zeros((nnl)),(-1,1))
+        acc_grad_bias["b" + str(L)] = np.reshape(np.zeros((k)),(-1,1))
+        return acc_grad_weights,acc_grad_bias
+           
+  # nnl = number of neurons in each layer,hl = number of hidden layers
+  def feed_forward(self):
+    nnl = self.nnl
+    d = self.d
+    k = self.k
+    L = self.L
+        
+    n = self.n
+
+    # d = dimension of input
+    
+    # parameters - weights,bias
+    weights = {}
+    bias = {}
+
+    input = self.x_train
+    actual_y = self.y_train
+
+    # number of iterations
+    # TODo what is use of batch size 
+    max_iter = 10
+    epoch = self.parameters["epochs"]
+    
+    
+    # step size
+    # TODO batch size ?
+    step_size = epoch + 1
+
+    # initailzation of weights
+    '''
+        W1 = (d,nnl)
+        W2,..,W(L - 1) = (nnl,nnl)
+        WL = (k,nnl)
+    '''
+    w1 = np.random.rand(nnl,d)
+    weights["w1"] = w1
+    for i in range(2,L):
+      weights["w" + str(i)] = np.random.rand(nnl,nnl)
+    weights["w" + str(L)] = np.random.rand(k,nnl)
+
+    
+    # initialization of bias
+    for i in range(1,L):
+      bias["b" + str(i)] = np.reshape(np.random.rand(nnl),(-1,1))
+    bias["b" + str(L)] = np.reshape(np.random.rand(k),(-1,1))
+
+    loss = []
+      
+    while (epoch < max_iter):
+      loss_input = 0
+
+      # to accumulate grad_weights and grad_bais for each epoch
+      acc_grad_weights,acc_grad_bias = self.make_accumalate_zero()
+
+      for index in range(n):
+        
+        # forward propagation
+        pre_activation,post_activation,predicted_y = self.forward_propagation(input,index,weights,bias)
+        # compute loss
+        loss_input += self.loss_function(predicted_y,self.parameters["loss"],self.y_train[index])
+
+        # backward propagation
+        grad_weights,grad_bias = self.backward_propagation(index,weights,bias,pre_activation,post_activation,predicted_y,actual_y)
+
+        # accumulate grad_weights and grad_bais for each input
+        
+        for (key,value) in grad_weights.items():
+          acc_grad_weights[key] = acc_grad_weights[key] + grad_weights[key]
+
+        for (key,value) in grad_bias.items():
+          acc_grad_bias[key] = acc_grad_bias[key] + grad_bias[key]
+        
+        acc_grad_weights,acc_grad_bias,weights,bias = self.optimization_function(function_name= self.parameters["optimizer"],
+                                                                                  index = index,
+                                                                                  acc_grad_weights = acc_grad_weights,
+                                                                                  acc_grad_bias= acc_grad_bias,weights = weights,
+                                                                                  bias = bias)
+          
+      epoch = epoch + 1
+      step_size = epoch
+      loss.append(loss_input/n)
+
+    index = np.random.randint(self.test_n_samples)
+    input = self.x_test
+    pre_activation,post_activation,predicted_y = self.forward_propagation(input,index,weights,bias)
+
+    print(predicted_y*100)
+
+feed_forward = FeedForward()
+# feed_forward.question_1()
+feed_forward.feed_forward()
