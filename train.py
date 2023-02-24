@@ -5,12 +5,13 @@ import numpy as np
 from matplotlib import pyplot as plt
 import random
 import wandb
-
+import argparse
 
 class FeedForward :
 
   
   def __init__(self):
+        
         self.parameters = {
           "wandb_project":"DL Assignment 1",
           "wandb_entity" : "myname",
@@ -31,6 +32,10 @@ class FeedForward :
           "hidden_size" : 4,
           "activation" : "sigmoid"
         }
+
+        # update paramters as given in cmd 
+        self.update_parameters()
+        print(self.parameters)
         # loading training and test data from fashion_mnist dataset
         if(self.parameters["dataset"] == "fashion_mnist"):
               (self.x_train,self.y_train),(self.x_test,self.y_test) = fashion_mnist.load_data()
@@ -57,7 +62,64 @@ class FeedForward :
             project=self.parameters["wandb_project"],
             # entity= self.parameters["wandb_entity"]
           )
-  
+  def update_parameters(self):
+        parser = argparse.ArgumentParser(description='Calculate volume of cylinder')
+        parser.add_argument('-wp','--wandb_project',type = str,metavar = '',help='wandb project')
+        parser.add_argument('-we','--wandb_entity',type = str,metavar = '',help='wandb entity')
+        parser.add_argument('-d','--dataset',type = str,metavar = '',help='dataset')
+        parser.add_argument('-e','--epochs',type = int,metavar = '',help='epochs')
+        parser.add_argument('-b','--batch_size',type = int,metavar = '',help='batch size')
+        parser.add_argument('-l','--loss',type = str,metavar = '',help='loss')
+        parser.add_argument('-o','--optimizer',type = str,metavar = '',help='optimizer')
+        parser.add_argument('-lr','--learning_rate',type = int,metavar = '',help='learning rate')
+        parser.add_argument('-m','--momentum',type = int,metavar = '',help='momentum')
+        parser.add_argument('-beta','--beta',type = int,metavar = '',help='beta')
+        parser.add_argument('-beta1','--beta1',type = int,metavar = '',help='beta1')
+        parser.add_argument('-beta2','--beta2',type = int,metavar = '',help='beta2')
+        parser.add_argument('-eps','--epsilon',type = int,metavar = '',help='epsilon')
+        parser.add_argument('-w_d','--weight_decay',type = int,metavar = '',help='weight decay')
+        parser.add_argument('-w_i','--weight_init',type = str,metavar = '',help='weight init')
+        parser.add_argument('-nhl','--num_layers',type = int,metavar = '',help='num layers')
+        parser.add_argument('-sz','--hidden_size',type = int,metavar = '',help='hidden size')
+        parser.add_argument('-a','--activation',type = str,metavar = '',help='activation')
+        args = parser.parse_args()
+        
+        if(args.wandb_project != None):
+              self.parameters["wandb_project"] = args.wandb_project
+        if(args.wandb_entity != None):
+              self.parameters["wandb_entity"] = args.wandb_entity
+        if(args.dataset != None):
+              self.parameters["dataset"] = args.dataset
+        if(args.epochs != None):
+              self.parameters["epochs"] = args.epochs
+        if(args.batch_size != None):
+              self.parameters["batch_size"] = args.batch_size
+        if(args.loss != None):
+              self.parameters["loss"] = args.loss
+        if(args.optimizer != None):
+              self.parameters["optimizer"] = args.optimizer
+        if(args.learning_rate != None):
+              self.parameters["learning_rate"] = args.learning_rate
+        if(args.momentum != None):
+              self.parameters["momentum"] = args.momentum
+        if(args.beta != None):
+              self.parameters["beta"] = args.beta
+        if(args.beta1 != None):
+              self.parameters["beta1"] = args.beta1
+        if(args.beta2 != None):
+              self.parameters["beta2"] = args.beta2
+        if(args.epsilon != None):
+              self.parameters["epsilon"] = args.epsilon
+        if(args.weight_decay != None):
+              self.parameters["weight_decay"] = args.weight_decay
+        if(args.weight_init != None):
+              self.parameters["weight_init"] = args.weight_init
+        if(args.num_layers != None):
+              self.parameters["num_layers"] = args.num_layers
+        if(args.hidden_size != None):
+              self.parameters["hidden_size"] = args.hidden_size
+        if(args.activation != None):
+              self.parameters["activation"] = args.activation
 
   def question_1(self):
       
@@ -311,4 +373,4 @@ class FeedForward :
 
 feed_forward = FeedForward()
 # feed_forward.question_1()
-feed_forward.feed_forward()
+# feed_forward.feed_forward()
