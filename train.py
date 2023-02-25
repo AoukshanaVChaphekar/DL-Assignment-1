@@ -30,11 +30,13 @@ class FeedForward :
           "weight_init" : "random",
           "num_layers" : 1,
           "hidden_size" : 4,
-          "activation" : "sigmoid"
+          "activation" : "sigmoid",
+          "output_function" : "softmax"
         }
 
         # update paramters as given in cmd 
         self.update_parameters()
+
         print(self.parameters)
         # loading training and test data from fashion_mnist dataset
         if(self.parameters["dataset"] == "fashion_mnist"):
@@ -62,26 +64,28 @@ class FeedForward :
             project=self.parameters["wandb_project"],
             # entity= self.parameters["wandb_entity"]
           )
+  
   def update_parameters(self):
         parser = argparse.ArgumentParser(description='Calculate volume of cylinder')
-        parser.add_argument('-wp','--wandb_project',type = str,metavar = '',help='wandb project')
-        parser.add_argument('-we','--wandb_entity',type = str,metavar = '',help='wandb entity')
-        parser.add_argument('-d','--dataset',type = str,metavar = '',help='dataset')
-        parser.add_argument('-e','--epochs',type = int,metavar = '',help='epochs')
-        parser.add_argument('-b','--batch_size',type = int,metavar = '',help='batch size')
-        parser.add_argument('-l','--loss',type = str,metavar = '',help='loss')
-        parser.add_argument('-o','--optimizer',type = str,metavar = '',help='optimizer')
-        parser.add_argument('-lr','--learning_rate',type = int,metavar = '',help='learning rate')
-        parser.add_argument('-m','--momentum',type = int,metavar = '',help='momentum')
-        parser.add_argument('-beta','--beta',type = int,metavar = '',help='beta')
-        parser.add_argument('-beta1','--beta1',type = int,metavar = '',help='beta1')
-        parser.add_argument('-beta2','--beta2',type = int,metavar = '',help='beta2')
-        parser.add_argument('-eps','--epsilon',type = int,metavar = '',help='epsilon')
-        parser.add_argument('-w_d','--weight_decay',type = int,metavar = '',help='weight decay')
-        parser.add_argument('-w_i','--weight_init',type = str,metavar = '',help='weight init')
-        parser.add_argument('-nhl','--num_layers',type = int,metavar = '',help='num layers')
-        parser.add_argument('-sz','--hidden_size',type = int,metavar = '',help='hidden size')
-        parser.add_argument('-a','--activation',type = str,metavar = '',help='activation')
+        parser.add_argument('-wp'   ,'--wandb_project',type = str  ,metavar = '', help='wandb project')
+        parser.add_argument('-we'   ,'--wandb_entity' ,type = str  ,metavar = '', help='wandb entity')
+        parser.add_argument('-d'    ,'--dataset'      ,type = str  ,metavar = '', help='dataset')
+        parser.add_argument('-e'    ,'--epochs'       ,type = int  ,metavar = '', help='epochs')
+        parser.add_argument('-b'    ,'--batch_size'   ,type = int  ,metavar = '', help='batch size')
+        parser.add_argument('-l'    ,'--loss'         ,type = str  ,metavar = '', help='loss')
+        parser.add_argument('-o'    ,'--optimizer'    ,type = str  ,metavar = '', help='optimizer')
+        parser.add_argument('-lr'   ,'--learning_rate',type = float,metavar = '', help='learning rate')
+        parser.add_argument('-m'    ,'--momentum'     ,type = float,metavar = '', help='momentum')
+        parser.add_argument('-beta' ,'--beta'         ,type = float,metavar = '', help='beta')
+        parser.add_argument('-beta1','--beta1'        ,type = float,metavar = '', help='beta1')
+        parser.add_argument('-beta2','--beta2'        ,type = float,metavar = '', help='beta2')
+        parser.add_argument('-eps'  ,'--epsilon'      ,type = float,metavar = '', help='epsilon')
+        parser.add_argument('-w_d'  ,'--weight_decay' ,type = float,metavar = '', help='weight decay')
+        parser.add_argument('-w_i'  ,'--weight_init'  ,type = str  ,metavar = '', help='weight init')
+        parser.add_argument('-nhl'  ,'--num_layers'   ,type = int  ,metavar = '', help='num layers')
+        parser.add_argument('-sz'   ,'--hidden_size'  ,type = int  ,metavar = '', help='hidden size')
+        parser.add_argument('-a'    ,'--activation'   ,type = str  ,metavar = '', help='activation')
+        parser.add_argument('-of'    ,'--output_function'   ,type = str  ,metavar = '', help='output function')
         args = parser.parse_args()
         
         if(args.wandb_project != None):
@@ -210,7 +214,7 @@ class FeedForward :
     pre_activation["a"+ str(L)] = bias["b" + str(L)] + np.dot(weights["w" + str(L)],post_activation["h" + str(L - 1)])
 
     # prediction y (y_hat) = O(a(L)) where O is output function
-    predicted_y = self.output_func(pre_activation["a" + str(L)],"softmax")
+    predicted_y = self.output_func(pre_activation["a" + str(L)],self.parameters["output_function"])
     
     return pre_activation,post_activation,predicted_y
 
@@ -248,21 +252,6 @@ class FeedForward :
       k = k - 1
     return grad_weights,grad_bias
 
-  def optimization_function(self,function_name,index,acc_grad_weights,acc_grad_bias,weights,bias):
-        nnl = self.nnl
-        d = self.d
-        k = self.k
-        L = self.L
-        step_size = self.parameters["learning_rate"]
-
-        if (function_name == "gd" and index == (self.n - 1)) or function_name == "sgd":
-              for (key,value) in weights.items():
-                weights[key] = np.subtract(weights[key],step_size * acc_grad_weights[key])
-              for (key,value) in bias.items():
-                bias[key] = np.subtract(bias[key],step_size * acc_grad_bias[key])
-              self.make_accumalate_zero()
-        return acc_grad_weights,acc_grad_bias,weights,bias
-    
   def make_accumalate_zero(self):
 
         nnl = self.nnl
@@ -303,13 +292,13 @@ class FeedForward :
 
     # number of iterations
     # TODo what is use of batch size 
-    max_iter = 10
+    max_iter = 50
     epoch = self.parameters["epochs"]
     
     
     # step size
     # TODO batch size ?
-    step_size = epoch + 1
+    # step_size = epoch + 1
 
     # initailzation of weights
     '''
@@ -355,14 +344,12 @@ class FeedForward :
         for (key,value) in grad_bias.items():
           acc_grad_bias[key] = acc_grad_bias[key] + grad_bias[key]
         
-        acc_grad_weights,acc_grad_bias,weights,bias = self.optimization_function(function_name= self.parameters["optimizer"],
+        acc_grad_weights,acc_grad_bias,weights,bias = self.optimization_function(function_name = self.parameters["optimizer"],
                                                                                   index = index,
                                                                                   acc_grad_weights = acc_grad_weights,
                                                                                   acc_grad_bias= acc_grad_bias,weights = weights,
                                                                                   bias = bias)
-          
       epoch = epoch + 1
-      step_size = epoch
       loss.append(loss_input/n)
 
     index = np.random.randint(self.test_n_samples)
@@ -371,6 +358,23 @@ class FeedForward :
 
     print(predicted_y*100)
 
+  
+  def optimization_function(self,function_name,index,acc_grad_weights,acc_grad_bias,weights,bias):
+        nnl = self.nnl
+        d = self.d
+        k = self.k
+        L = self.L
+        step_size = self.parameters["learning_rate"]
+
+        if (function_name == "gd" and index == (self.n - 1)) or function_name == "sgd":
+              for (key,value) in weights.items():
+                weights[key] = np.subtract(weights[key],step_size * acc_grad_weights[key])
+              for (key,value) in bias.items():
+                bias[key] = np.subtract(bias[key],step_size * acc_grad_bias[key])
+              self.make_accumalate_zero()
+        return acc_grad_weights,acc_grad_bias,weights,bias
+
+
 feed_forward = FeedForward()
 # feed_forward.question_1()
-# feed_forward.feed_forward()
+feed_forward.feed_forward()
