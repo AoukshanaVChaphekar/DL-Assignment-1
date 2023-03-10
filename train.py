@@ -8,7 +8,6 @@ Original file is located at
 """
 
 # !pip install wandb
-
 from tensorflow import keras
 from keras.datasets import fashion_mnist
 from keras.datasets import mnist
@@ -23,27 +22,26 @@ import copy
 class FeedForward:
 
     def __init__(self):
-
         # defining the default parameters
         self.parameters = {
             "wandb_project": "DL Final Assignment 1",
             "wandb_entity": "cs22m019",
             "dataset": "fashion_mnist",
-            "epochs": 5,
+            "epochs": 10,
             "batch_size": 32,
             "loss": "cross_entropy",
-            "optimizer": "gd",
-            "learning_rate": 0.1,
+            "optimizer": "rmsprop",
+            "learning_rate": 0.001,
             "momentum": 0.01,
             "beta": 0.5,
             "beta1": 0.5,
             "beta2": 0.5,
             "epsilon": 0.000001,
-            "weight_decay": 0.0,
-            "weight_init": "random",
-            "num_layers": 3,
-            "hidden_size": 128,
-            "activation": "sigmoid",
+            "weight_decay": 0.5,
+            "weight_init": "Xavier",
+            "num_layers": 4,
+            "hidden_size": 64,
+            "activation": "tanh",
             "output_function": "softmax"
         }
 
@@ -361,7 +359,10 @@ class FeedForward:
 
         # Computing output gradient
         one_hot_vector = self.oneHotVector(self.no_of_label, actual_y[index])
-        grad_pre_activation["a" + str(self.L)] = (predicted_y - one_hot_vector)
+        if self.lossFunction == "cross_entropy" :
+          grad_pre_activation["a" + str(self.L)] = (predicted_y - one_hot_vector)
+        else :
+          grad_pre_activation["a" + str(self.L)] = -2 * (one_hot_vector - predicted_y) * (predicted_y * (np.ones(self.no_of_label) - predicted_y))
        
         k = self.L
         while k > 0:
@@ -1306,7 +1307,7 @@ class FeedForward:
 
         wandb.init(
                 # set the wandb project where this run will be logged
-                project = feed_forward.parameters["wandb_project"],
+                project = self.parameters["wandb_project"],
         )
 
         # dictionary of labels to be added
@@ -1347,10 +1348,11 @@ class FeedForward:
         input = self.x_validate
         self.forward_propagation(input, index)
         predicted_y = self.post_activation["h" + str(self.L)]
+        print("Probability distribution over classes:")
         print(predicted_y)
 
     '''<----------------------------Question 3-4------------------------------------->'''
-    def feed_forward_q3_4(self):
+    def feedForwardNN(self):
         
         self.weights = dict()
         self.bias = dict()
@@ -1377,18 +1379,70 @@ class FeedForward:
               print("epoch:{epoch}, train loss:{train_l}, train accuracy:{train_ac}, validation loss:{validation_l}, validation accuracy:{validation_ac}".\
                   format(epoch = i,train_l = train_Loss,train_ac = train_Accuracy,validation_l = validation_Loss,validation_ac = self.validation_Accuracy))
             
-              wandb.log({'train loss':train_Loss, 'train accuracy':train_Accuracy,'validation loss':validation_Loss, 'validation accuracy':self.validation_Accuracy})
-            
-# if __name__ == "__main__":
+            #   wandb.log({'train loss':train_Loss, 'train accuracy':train_Accuracy,'validation loss':validation_Loss, 'validation accuracy':self.validation_Accuracy})
+
+    # plots train confusion matrix
+    def plotTrainConfusionMatrix(self) :
+        
+        # Initialize wandb
+        wandb.init(
+            project = self.parameters["wandb_project"],
+            entity = self.parameters["wandb_entity"]
+        )
+
+        # find predictions on train Data
+        trainPredictions = []
+        input = self.x_train
+        n = self.train_n_samples
+       
+        for i in range(n):
+            self.forward_propagation(input,i)
+            predicted_y = self.post_activation["h" +str(self.L)]
+            trainPredictions.append(np.argmax(predicted_y))
+
+        train_matrix = wandb.sklearn.plot_confusion_matrix(self.y_train, trainPredictions, labels = self.title)
+        wandb.log({"Confusion Matrix for Predictions on Train Data For Best Model" : train_matrix})
+
+    # plots test confusion matrix
+    def plotTestConfusionMatrix(self) :
+        
+        # Initialize wandb
+        wandb.init(
+            project = self.parameters["wandb_project"],
+            entity = self.parameters["wandb_entity"]
+        )
+
+        # find predictions on test Data
+        testPredictions = []
+        input = self.x_test
+        n = self.test_n_samples
+        for i in range(n):
+            self.forward_propagation(input,i)
+            predicted_y = self.post_activation["h" +str(self.L)]
+            testPredictions.append(np.argmax(predicted_y))
+
+        test_matrix = wandb.sklearn.plot_confusion_matrix(self.y_test, testPredictions, labels = self.title)
+        wandb.log({"Confusion Matrix for Predictions on Test Data For Best Model" : test_matrix})
+
 
 feed_forward = FeedForward()
+
+'''<----------------------------Question 1------------------------------------->'''
 # feed_forward.question_1()
+
+'''<----------------------------Question 2------------------------------------->'''
 # feed_forward.feed_forward_q2()
 
+'''<----------------------------Question 7------------------------------------->'''
+feed_forward.feedForwardNN()
+# feed_forward.plotTrainConfusionMatrix()
+# feed_forward.plotTestConfusionMatrix()
+
+'''
 sweep_config = {
 
         'method' : 'random', #grid ,random - generates exponential ways,bayesian  efficient way
-        'name' : 'random_sweep cross_entropy',
+        'name' : 'random_sweep MSE',
         'metric' : {
             'name' : 'validation accuracy',
             'goal' : 'maximize'
@@ -1453,6 +1507,7 @@ def train():
 
 
     wandb.run.name = "optimizer_" + str(wandb.config.optimizer) +  "_hl_"+ str(wandb.config.number_of_hidden_layer) + "_bs_" + str(wandb.config.batch_size) + "_ac_" + str(wandb.config.activation)    
-    feed_forward.feed_forward_q3_4()
+    feed_forward.feedForwardNN()
 
-wandb.agent(sweep_id=sweep_id,function = train,count = 100)
+wandb.agent(sweep_id=sweep_id,function = train,count = 50)
+'''
