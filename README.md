@@ -1,4 +1,4 @@
-# Fashion-MNIST Classification using Feed forward neural networks
+# Fashion-MNIST Classification using Feed Forward Neural Networks
 
 The **wandb report** can be found in the following link:
 
@@ -8,7 +8,7 @@ The problem statement involves implementing a feedforward neural network and bac
 
 ## The code base has the following features:
 
-    1.Forward and backward propagation algorithms hardcoded.
+    1.Forward and backward propagation algorithms are hardcoded.
     
     2.The weights and biases, activations and their gradients are stored as dictionaries configured as attributed within the FeedForward class.
     
