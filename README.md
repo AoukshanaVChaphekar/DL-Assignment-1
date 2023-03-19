@@ -38,7 +38,7 @@ hyper parameter combinations:
 # Running the files
 
 ## Quesiton 1:
-Uncomment the line number 1431 in train.py
+Uncomment the line number 1430 in train.py
 
 Execute the command
      
@@ -49,7 +49,7 @@ python train.py
 Generated output will be visible as a run in Wandb workspace.
     
 ## Question 2:
-Uncomment the line number 1434 in train.py 
+Uncomment the line number 1433 in train.py 
     
 Execute the command
 ```python 
@@ -59,7 +59,7 @@ python train.py
 The output will be generated in terminal window.
     
 ## Quesiton 7:
-Uncomment the line number 1438 or 1439 in train.py to generate confusion matrix for train dataset and test dataset respectively.
+Uncomment the line number 1436 and 1437 or 1438 in train.py to generate confusion matrix for train dataset and test dataset respectively.
 
 Execute the command
 ```python 
