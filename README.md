@@ -67,7 +67,7 @@ python train.py
 ```
 
 ## Quesiton 10:
-Uncomment the line number 1374-1378,1386 1446-1493 in train.py to obtain the accuracies for the following 3 configurations.
+Uncomment the line number 1374-1378,1386,1446-1493 in train.py to obtain the accuracies for the following 3 configurations.
 
 Execute the command
 ```python 
