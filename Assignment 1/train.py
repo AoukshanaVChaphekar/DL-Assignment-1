@@ -1371,19 +1371,19 @@ class FeedForward:
 
         self.validation_Accuracy = 0
 
-
-        wandb.init(
-                # set the wandb project where this run will be logged
-                project = self.parameters["wandb_project"]
-                # config = sweep_config
-        )
+        # wandb.init(
+        #         # set the wandb project where this run will be logged
+        #         project = self.parameters["wandb_project"]
+        #         # config = sweep_config
+        # )
+        
         # run feedforward NN 
         for i in range(1, self.epoch + 1):
               (train_Loss, train_Accuracy, validation_Loss,self.validation_Accuracy) = self.executeOneEpoch(i)
               print("epoch:{epoch}, train loss:{train_l}, train accuracy:{train_ac}, validation loss:{validation_l}, validation accuracy:{validation_ac}".\
                   format(epoch = i,train_l = train_Loss,train_ac = train_Accuracy,validation_l = validation_Loss,validation_ac = self.validation_Accuracy))
 
-              wandb.log({'train loss':train_Loss, 'train accuracy':train_Accuracy,'validation loss':validation_Loss, 'validation accuracy':self.validation_Accuracy})
+            #   wandb.log({'train loss':train_Loss, 'train accuracy':train_Accuracy,'validation loss':validation_Loss, 'validation accuracy':self.validation_Accuracy})
             
     # plots train confusion matrix
     def plotTrainConfusionMatrix(self) :
