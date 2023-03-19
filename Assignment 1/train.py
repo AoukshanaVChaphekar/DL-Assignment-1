@@ -1376,7 +1376,7 @@ class FeedForward:
         #         project = self.parameters["wandb_project"]
         #         # config = sweep_config
         # )
-        
+
         # run feedforward NN 
         for i in range(1, self.epoch + 1):
               (train_Loss, train_Accuracy, validation_Loss,self.validation_Accuracy) = self.executeOneEpoch(i)
@@ -1443,7 +1443,7 @@ feed_forward = FeedForward()
 # feed_forward.plotTestConfusionMatrix()
 
 '''<----------------------------Question 10------------------------------------>'''
-# configuration 1
+# # configuration 1
 # feed_forward.parameters["dataset"] = "mnist"
 # feed_forward.parameters["epochs"] = "10"
 # feed_forward.parameters["batch_size"] = "32"
@@ -1459,7 +1459,7 @@ feed_forward = FeedForward()
 # print("CONFIG 1")
 # feed_forward.feedForwardNN()
 
-# configuration 2
+# # configuration 2
 # # feed_forward.parameters["dataset"] = "mnist"
 # # feed_forward.parameters["epochs"] = "10"
 # # feed_forward.parameters["batch_size"] = "32"
@@ -1476,7 +1476,7 @@ feed_forward = FeedForward()
 # feed_forward.feedForwardNN()
 
 
-# configuration 3
+# # configuration 3
 # feed_forward.parameters["dataset"] = "mnist"
 # feed_forward.parameters["epochs"] = "10"
 # feed_forward.parameters["batch_size"] = "32"
