@@ -27,8 +27,8 @@ class FeedForward:
             "wandb_project": "DL Final Assignment 1",
             "wandb_entity": "cs22m019",
             "dataset": "fashion_mnist",
-            "epochs": 2,
-            "batch_size": 1,
+            "epochs": 10,
+            "batch_size": 32,
             "loss": "cross_entropy",
             "optimizer": "nadam",
             "learning_rate": 0.001,
@@ -40,7 +40,7 @@ class FeedForward:
             "weight_decay": 0.5,
             "weight_init": "Xavier",
             "num_layers": 4,
-            "hidden_size": 3,
+            "hidden_size": 128,
             "activation": "tanh",
             "output_function": "softmax"
         }
