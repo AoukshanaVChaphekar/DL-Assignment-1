@@ -27,8 +27,8 @@ class FeedForward:
             "wandb_project": "DL Final Assignment 1",
             "wandb_entity": "cs22m019",
             "dataset": "fashion_mnist",
-            "epochs": 10,
-            "batch_size": 32,
+            "epochs": 2,
+            "batch_size": 1,
             "loss": "cross_entropy",
             "optimizer": "nadam",
             "learning_rate": 0.001,
@@ -40,7 +40,7 @@ class FeedForward:
             "weight_decay": 0.5,
             "weight_init": "Xavier",
             "num_layers": 4,
-            "hidden_size": 128,
+            "hidden_size": 3,
             "activation": "tanh",
             "output_function": "softmax"
         }
@@ -1372,14 +1372,19 @@ class FeedForward:
         self.validation_Accuracy = 0
 
 
+        wandb.init(
+                # set the wandb project where this run will be logged
+                project = self.parameters["wandb_project"]
+                # config = sweep_config
+        )
         # run feedforward NN 
         for i in range(1, self.epoch + 1):
               (train_Loss, train_Accuracy, validation_Loss,self.validation_Accuracy) = self.executeOneEpoch(i)
               print("epoch:{epoch}, train loss:{train_l}, train accuracy:{train_ac}, validation loss:{validation_l}, validation accuracy:{validation_ac}".\
                   format(epoch = i,train_l = train_Loss,train_ac = train_Accuracy,validation_l = validation_Loss,validation_ac = self.validation_Accuracy))
 
-            #   wandb.log({'train loss':train_Loss, 'train accuracy':train_Accuracy,'validation loss':validation_Loss, 'validation accuracy':self.validation_Accuracy})
-
+              wandb.log({'train loss':train_Loss, 'train accuracy':train_Accuracy,'validation loss':validation_Loss, 'validation accuracy':self.validation_Accuracy})
+            
     # plots train confusion matrix
     def plotTrainConfusionMatrix(self) :
         
@@ -1399,7 +1404,8 @@ class FeedForward:
             predicted_y = self.post_activation["h" +str(self.L)]
             trainPredictions.append(np.argmax(predicted_y))
 
-        train_matrix = wandb.sklearn.plot_confusion_matrix(self.y_train, trainPredictions, labels = self.title)
+        train_matrix = wandb.plot.confusion_matrix(trainPredictions,self.y_train, labels = self.title)
+        
         wandb.log({"Confusion Matrix for Predictions on Train Data For Best Model" : train_matrix})
 
     # plots test confusion matrix
@@ -1420,9 +1426,8 @@ class FeedForward:
             predicted_y = self.post_activation["h" +str(self.L)]
             testPredictions.append(np.argmax(predicted_y))
 
-        test_matrix = wandb.sklearn.plot_confusion_matrix(self.y_test, testPredictions, labels = self.title)
+        test_matrix = wandb.plot.confusion_matrix(testPredictions,self.y_test, labels = self.title)
         wandb.log({"Confusion Matrix for Predictions on Test Data For Best Model" : test_matrix})
-
 
 feed_forward = FeedForward()
 
@@ -1439,55 +1444,54 @@ feed_forward = FeedForward()
 
 '''<----------------------------Question 10------------------------------------>'''
 # configuration 1
-'''
-feed_forward.parameters["dataset"] = "mnist"
-feed_forward.parameters["epochs"] = "10"
-feed_forward.parameters["batch_size"] = "32"
-feed_forward.parameters["loss"] = "cross_entropy"
-feed_forward.parameters["optimizer"] = "nadam"
-feed_forward.parameters["learning_rate"] = "0.001"
-feed_forward.parameters["weight_decay"] = "0.5"
-feed_forward.parameters["weight_init"] = "Xavier"
-feed_forward.parameters["num_layers"] = "4"
-feed_forward.parameters["hidden_size"] = "128"
-feed_forward.parameters["activation"] = "tanh"
+# feed_forward.parameters["dataset"] = "mnist"
+# feed_forward.parameters["epochs"] = "10"
+# feed_forward.parameters["batch_size"] = "32"
+# feed_forward.parameters["loss"] = "cross_entropy"
+# feed_forward.parameters["optimizer"] = "nadam"
+# feed_forward.parameters["learning_rate"] = "0.001"
+# feed_forward.parameters["weight_decay"] = "0.5"
+# feed_forward.parameters["weight_init"] = "Xavier"
+# feed_forward.parameters["num_layers"] = "4"
+# feed_forward.parameters["hidden_size"] = "128"
+# feed_forward.parameters["activation"] = "tanh"
 
-print("CONFIG 1")
-feed_forward.feedForwardNN()
+# print("CONFIG 1")
+# feed_forward.feedForwardNN()
 
 # configuration 2
-feed_forward.parameters["dataset"] = "mnist"
-feed_forward.parameters["epochs"] = "10"
-feed_forward.parameters["batch_size"] = "32"
-feed_forward.parameters["loss"] = "cross_entropy"
-feed_forward.parameters["optimizer"] = "nadam"
-feed_forward.parameters["learning_rate"] = "0.001"
-feed_forward.parameters["weight_decay"] = "0.0005"
-feed_forward.parameters["weight_init"] = "Xavier"
-feed_forward.parameters["num_layers"] = "5"
-feed_forward.parameters["hidden_size"] = "64"
-feed_forward.parameters["activation"] = "tanh"
+# # feed_forward.parameters["dataset"] = "mnist"
+# # feed_forward.parameters["epochs"] = "10"
+# # feed_forward.parameters["batch_size"] = "32"
+# # feed_forward.parameters["loss"] = "cross_entropy"
+# # feed_forward.parameters["optimizer"] = "nadam"
+# # feed_forward.parameters["learning_rate"] = "0.001"
+# # feed_forward.parameters["weight_decay"] = "0.0005"
+# # feed_forward.parameters["weight_init"] = "Xavier"
+# # feed_forward.parameters["num_layers"] = "5"
+# # feed_forward.parameters["hidden_size"] = "64"
+# # feed_forward.parameters["activation"] = "tanh"
 
-print("CONFIG 2")
-feed_forward.feedForwardNN()
+# print("CONFIG 2")
+# feed_forward.feedForwardNN()
 
 
 # configuration 3
-feed_forward.parameters["dataset"] = "mnist"
-feed_forward.parameters["epochs"] = "10"
-feed_forward.parameters["batch_size"] = "32"
-feed_forward.parameters["loss"] = "cross_entropy"
-feed_forward.parameters["optimizer"] = "rmsprop"
-feed_forward.parameters["learning_rate"] = "0.001"
-feed_forward.parameters["weight_decay"] = "0.5"
-feed_forward.parameters["weight_init"] = "Xavier"
-feed_forward.parameters["num_layers"] = "4"
-feed_forward.parameters["hidden_size"] = "64"
-feed_forward.parameters["activation"] = "tanh"
+# feed_forward.parameters["dataset"] = "mnist"
+# feed_forward.parameters["epochs"] = "10"
+# feed_forward.parameters["batch_size"] = "32"
+# feed_forward.parameters["loss"] = "cross_entropy"
+# feed_forward.parameters["optimizer"] = "rmsprop"
+# feed_forward.parameters["learning_rate"] = "0.001"
+# feed_forward.parameters["weight_decay"] = "0.5"
+# feed_forward.parameters["weight_init"] = "Xavier"
+# feed_forward.parameters["num_layers"] = "4"
+# feed_forward.parameters["hidden_size"] = "64"
+# feed_forward.parameters["activation"] = "tanh"
 
-print("CONFIG 3")
-feed_forward.feedForwardNN()
-'''
+# print("CONFIG 3")
+# feed_forward.feedForwardNN()
+
 
 '''
 sweep_config = {
@@ -1500,40 +1504,31 @@ sweep_config = {
         },
         'parameters':{
                 'epochs' : {
-                    # 'values' : [5,10]
-                    'values' : [5]
+                    'values' : [10]
                 },
                 'number_of_hidden_layer':{
-                    # 'values' : [3,4,5]
-                     'values' : [5]
+                     'values' : [4,5]
                 },
                 'size_of_hidden_layer' : {
-                    # 'values' :[32,64,128]
-                    'values' :[128]  
+                    'values' :[64,128]  
                 },
                 'weight_decay' : {
-                    # 'values' : [0,0.0005,0.5]
-                    'values' : [0.0005]
+                    'values' : [0.5,0.0005]
                 },
                 'learning_rate' : {
-                    # 'values' : [1e-3,1e-4]
                     'values' : [1e-3]
                 },
                 'optimizer' : {
-                    # 'values' : ['sgd','momentum','nestrov','rmsprop','adam','nadam']
-                    'values' : ['adam']
+                    'values' : ['nadam','rmsprop']
                 },
                 'batch_size' : {
-                    'values' : [64]
-                        # 'values' : [16,32,64]
+                    'values' : [32]
                 },
                 'weight_initialization' :{
-                    # 'values' : ['random','Xavier']
                     'values' : ['Xavier']
                 },
                 'activation' : {
-                    'values' : ['ReLU']
-                    # 'values' : ['sigmoid','tanh','ReLU']
+                    'values' : ['tanh']
                 }
         }
 }
@@ -1544,7 +1539,8 @@ def train():
                 # set the wandb project where this run will be logged
                 config = sweep_config
     )
-    
+    feed_forward.parameters["dataset"] = "mnist"
+
     feed_forward.epoch = wandb.config.epochs
     feed_forward.nnl = wandb.config.size_of_hidden_layer
     feed_forward.weightDecay =  wandb.config.weight_decay
@@ -1560,5 +1556,5 @@ def train():
     wandb.run.name = "optimizer_" + str(wandb.config.optimizer) +  "_hl_"+ str(wandb.config.number_of_hidden_layer) + "_bs_" + str(wandb.config.batch_size) + "_ac_" + str(wandb.config.activation)    
     feed_forward.feedForwardNN()
 
-wandb.agent(sweep_id=sweep_id,function = train,count = 50)
+wandb.agent(sweep_id=sweep_id,function = train)
 '''
