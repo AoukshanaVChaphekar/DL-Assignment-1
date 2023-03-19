@@ -38,7 +38,7 @@ hyper parameter combinations:
 # Running the files
 
 ## Quesiton 1:
-Uncomment the line number 1430 in train.py
+Uncomment the line number 1435 in train.py
 
 Execute the command
      
@@ -49,7 +49,7 @@ python train.py
 Generated output will be visible as a run in Wandb workspace.
     
 ## Question 2:
-Uncomment the line number 1433 in train.py 
+Uncomment the line number 1438 in train.py 
     
 Execute the command
 ```python 
@@ -59,7 +59,7 @@ python train.py
 The output will be generated in terminal window.
     
 ## Quesiton 7:
-Uncomment the line number 1436 and 1437 or 1438 in train.py to generate confusion matrix for train dataset and test dataset respectively.
+Uncomment the line number 1441 and 1442 or 1443 in train.py to generate confusion matrix for train dataset and test dataset respectively.
 
 Execute the command
 ```python 
@@ -67,7 +67,7 @@ python train.py
 ```
 
 ## Quesiton 10:
-Uncomment the line number 1442 to 1490 in train.py to obtain the accuracies for the following 3 configurations.
+Uncomment the line number 1374-1378,1386 1446-1493 in train.py to obtain the accuracies for the following 3 configurations.
 
 Execute the command
 ```python 
@@ -83,7 +83,7 @@ python train.py
     Optimiser - NADAM
     Learning Rate - 0.001
     Batch size - 32
-Accuracy obtained - 86.8%
+Accuracy obtained - 87%
 ## Configuration 2
     
     Number of Hidden Layers - 5
@@ -94,7 +94,7 @@ Accuracy obtained - 86.8%
     Optimiser - NADAM
     Learning Rate - 0.001
     Batch size - 32
-Accuracy obtained - 86.48%
+Accuracy obtained - 86.28%
 ## Configuration 3
     
     Number of Hidden Layers - 4
@@ -105,7 +105,7 @@ Accuracy obtained - 86.48%
     Optimiser - RMSProp
     Learning Rate - 0.001
     Batch size - 32
-Accuracy obtained - 86.9%
+Accuracy obtained - 85.73%
 
 # Results
 
