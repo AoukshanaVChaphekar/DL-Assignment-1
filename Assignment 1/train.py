@@ -30,7 +30,7 @@ class FeedForward:
             "epochs": 10,
             "batch_size": 32,
             "loss": "cross_entropy",
-            "optimizer": "rmsprop",
+            "optimizer": "nadam",
             "learning_rate": 0.001,
             "momentum": 0.01,
             "beta": 0.5,
@@ -40,7 +40,7 @@ class FeedForward:
             "weight_decay": 0.5,
             "weight_init": "Xavier",
             "num_layers": 4,
-            "hidden_size": 64,
+            "hidden_size": 128,
             "activation": "tanh",
             "output_function": "softmax"
         }
@@ -48,7 +48,6 @@ class FeedForward:
         # updating the parameters to the parameters given in command line
         self.update_parameters()
 
-       
         # loading training and test data from fashion_mnist dataset or mnist dataset
         if (self.parameters["dataset"] == "fashion_mnist"):
             (self.x_train, self.y_train), (self.x_test,self.y_test) = fashion_mnist.load_data()
@@ -1378,7 +1377,7 @@ class FeedForward:
               (train_Loss, train_Accuracy, validation_Loss,self.validation_Accuracy) = self.executeOneEpoch(i)
               print("epoch:{epoch}, train loss:{train_l}, train accuracy:{train_ac}, validation loss:{validation_l}, validation accuracy:{validation_ac}".\
                   format(epoch = i,train_l = train_Loss,train_ac = train_Accuracy,validation_l = validation_Loss,validation_ac = self.validation_Accuracy))
-            
+
             #   wandb.log({'train loss':train_Loss, 'train accuracy':train_Accuracy,'validation loss':validation_Loss, 'validation accuracy':self.validation_Accuracy})
 
     # plots train confusion matrix
@@ -1434,9 +1433,60 @@ feed_forward = FeedForward()
 # feed_forward.feed_forward_q2()
 
 '''<----------------------------Question 7------------------------------------->'''
-feed_forward.feedForwardNN()
+# feed_forward.feedForwardNN()
 # feed_forward.plotTrainConfusionMatrix()
 # feed_forward.plotTestConfusionMatrix()
+
+'''<----------------------------Question 10------------------------------------>'''
+# configuration 1
+feed_forward.parameters["dataset"] = "mnist"
+feed_forward.parameters["epochs"] = "10"
+feed_forward.parameters["batch_size"] = "32"
+feed_forward.parameters["loss"] = "cross_entropy"
+feed_forward.parameters["optimizer"] = "nadam"
+feed_forward.parameters["learning_rate"] = "0.001"
+feed_forward.parameters["weight_decay"] = "0.5"
+feed_forward.parameters["weight_init"] = "Xavier"
+feed_forward.parameters["num_layers"] = "4"
+feed_forward.parameters["hidden_size"] = "128"
+feed_forward.parameters["activation"] = "tanh"
+
+print("CONFIG 1")
+feed_forward.feedForwardNN()
+
+# configuration 2
+feed_forward.parameters["dataset"] = "mnist"
+feed_forward.parameters["epochs"] = "10"
+feed_forward.parameters["batch_size"] = "32"
+feed_forward.parameters["loss"] = "cross_entropy"
+feed_forward.parameters["optimizer"] = "nadam"
+feed_forward.parameters["learning_rate"] = "0.001"
+feed_forward.parameters["weight_decay"] = "0.0005"
+feed_forward.parameters["weight_init"] = "Xavier"
+feed_forward.parameters["num_layers"] = "5"
+feed_forward.parameters["hidden_size"] = "64"
+feed_forward.parameters["activation"] = "tanh"
+
+print("CONFIG 2")
+feed_forward.feedForwardNN()
+
+
+# configuration 3
+feed_forward.parameters["dataset"] = "mnist"
+feed_forward.parameters["epochs"] = "10"
+feed_forward.parameters["batch_size"] = "32"
+feed_forward.parameters["loss"] = "cross_entropy"
+feed_forward.parameters["optimizer"] = "rmsprop"
+feed_forward.parameters["learning_rate"] = "0.001"
+feed_forward.parameters["weight_decay"] = "0.5"
+feed_forward.parameters["weight_init"] = "Xavier"
+feed_forward.parameters["num_layers"] = "4"
+feed_forward.parameters["hidden_size"] = "64"
+feed_forward.parameters["activation"] = "tanh"
+
+print("CONFIG 3")
+feed_forward.feedForwardNN()
+
 
 '''
 sweep_config = {
