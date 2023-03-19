@@ -10,7 +10,7 @@ The problem statement involves implementing a feedforward neural network and bac
 
     1.Forward and backward propagation algorithms are hardcoded.
     
-    2.The weights and biases, activations and their gradients are stored as dictionaries configured as attributed within the FeedForward class.
+    2.The weights and biases, activations and their gradients are stored as dictionaries configured as attributes within the FeedForward class.
     
     3.A class is created which has functions to implement all the required output_functions,activation_functions,loss_functions,optimizers,
     forward and backward propagation algorithms.
@@ -66,8 +66,47 @@ Execute the command
 python train.py
 ```
 
-Generated output will be visible in Wandb workspace.
-        
+## Quesiton 10:
+Uncomment the line number 1441 to 1488 in train.py to obtain the accuracies for the following 3 configurations.
+
+Execute the command
+```python 
+python train.py
+```
+## Configuration 1
+    
+    Number of Hidden Layers - 4
+    Number of Hidden Neurons - 128
+    Weight Decay - 0.5
+    Activation - tanh
+    Initialisation - Xavier 
+    Optimiser - NADAM
+    Learning Rate - 0.001
+    Batch size - 32
+Accuracy obtained - 86.8%
+## Configuration 2
+    
+    Number of Hidden Layers - 5
+    Number of Hidden Neurons - 64
+    Weight Decay - 0.0005
+    Activation - tanh
+    Initialisation - Xavier
+    Optimiser - NADAM
+    Learning Rate - 0.001
+    Batch size - 32
+Accuracy obtained - 86.48%
+## Configuration 3
+    
+    Number of Hidden Layers - 4
+    Number of Hidden Neurons - 64
+    Weight Decay - 0.5
+    Activation - tanh
+    Initialisation - Xavier
+    Optimiser - RMSProp
+    Learning Rate - 0.001
+    Batch size - 32
+Accuracy obtained - 86.9%
+
 # Results
 
 For the feed forward neural network implemented, the maximum validation accuracy reported was 86.62% on the Fashion MNIST dataset.
@@ -77,7 +116,7 @@ One of the model configuration chosen to be the best is as follows:
     Number of Hidden Neurons - 128
     Weight Decay - 0.5
     Activation - tanh
-    Initialisation - random
+    Initialisation - Xavier 
     Optimiser - NADAM
     Learning Rate - 0.001
     Batch size - 32
