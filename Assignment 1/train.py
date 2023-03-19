@@ -1439,6 +1439,7 @@ feed_forward = FeedForward()
 
 '''<----------------------------Question 10------------------------------------>'''
 # configuration 1
+'''
 feed_forward.parameters["dataset"] = "mnist"
 feed_forward.parameters["epochs"] = "10"
 feed_forward.parameters["batch_size"] = "32"
@@ -1486,7 +1487,7 @@ feed_forward.parameters["activation"] = "tanh"
 
 print("CONFIG 3")
 feed_forward.feedForwardNN()
-
+'''
 
 '''
 sweep_config = {
